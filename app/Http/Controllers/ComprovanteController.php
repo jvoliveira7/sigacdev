@@ -72,4 +72,14 @@ class ComprovanteController extends Controller
         return redirect()->route('comprovantes.index')
             ->with('success', 'Comprovante excluído com sucesso!');
     }
+
+    // Exibe os detalhes de um comprovante específico
+    public function show($id)
+    {
+        // Encontrar o comprovante com o id fornecido, incluindo as relações
+        $comprovante = Comprovante::with(['aluno', 'documento'])->findOrFail($id);
+
+        // Retornar a view de detalhes do comprovante
+        return view('comprovantes.show', compact('comprovante'));
+    }
 }

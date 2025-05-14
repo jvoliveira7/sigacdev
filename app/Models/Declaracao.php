@@ -9,9 +9,8 @@ class Declaracao extends Model
 {
     use HasFactory;
 
-    protected $table = 'declaracoes'; // Corrige o nome da tabela
-
-
+    protected $table = 'declaracoes';
+    
     protected $fillable = [
         'aluno_id',
         'turma_id',
