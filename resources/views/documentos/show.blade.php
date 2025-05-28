@@ -1,13 +1,20 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Documento #{{ $documento->id }}</h1>
+<div class="p-6 max-w-xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Detalhes do Documento</h1>
 
-    <p><strong>Nome:</strong> {{ $documento->nome }}</p>
-    <p><strong>Obrigatório:</strong> {{ $documento->obrigatorio ? 'Sim' : 'Não' }}</p>
+    <div class="mb-4">
+        <strong>Nome:</strong> {{ $documento->nome }}
+    </div>
+    <div class="mb-4">
+        <strong>Tipo:</strong> {{ $documento->tipo }}
+    </div>
+    <div class="mb-4">
+        <strong>Aluno:</strong> {{ $documento->aluno->nome ?? '—' }}
+    </div>
 
-    <a href="{{ route('documentos.edit', $documento->id) }}" class="btn btn-warning">Editar</a>
-    <a href="{{ route('documentos.index') }}" class="btn btn-secondary">Voltar</a>
+    <a href="{{ route('documentos.edit', $documento->id) }}" class="text-yellow-600 hover:underline">Editar</a>
+    <a href="{{ route('documentos.index') }}" class="ml-4 text-blue-600 hover:underline">Voltar</a>
 </div>
 @endsection

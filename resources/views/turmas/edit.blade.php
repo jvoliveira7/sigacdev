@@ -1,30 +1,32 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Editar Turma</h1>
+<div class="max-w-xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Editar Turma</h1>
 
-    <form action="{{ route('turmas.update', $turma->id) }}" method="POST">
+    <form action="{{ route('turmas.update', $turma) }}" method="POST" class="space-y-4">
         @csrf
         @method('PUT')
 
-        <div class="form-group">
-            <label for="curso_id">Curso</label>
-            <select name="curso_id" id="curso_id" class="form-control">
-                @foreach ($cursos as $curso)
-                    <option value="{{ $curso->id }}" @if ($curso->id == $turma->curso_id) selected @endif>
-                        {{ $curso->nome }}
-                    </option>
+        <div>
+            <label class="block font-semibold">Ano:</label>
+            <input type="number" name="ano" value="{{ old('ano', $turma->ano) }}" class="w-full border px-4 py-2 rounded" required>
+            @error('ano') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
+        </div>
+
+        <div>
+            <label class="block font-semibold">Curso:</label>
+            <select name="curso_id" class="w-full border px-4 py-2 rounded" required>
+                <option value="">Selecione o curso</option>
+                @foreach($cursos as $curso)
+                    <option value="{{ $curso->id }}" {{ old('curso_id', $turma->curso_id) == $curso->id ? 'selected' : '' }}>{{ $curso->nome }}</option>
                 @endforeach
             </select>
+            @error('curso_id') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
         </div>
 
-        <div class="form-group">
-            <label for="nome">Nome da Turma</label>
-            <input type="text" name="nome" id="nome" class="form-control" value="{{ old('nome', $turma->nome) }}">
-        </div>
-
-        <button type="submit" class="btn btn-primary">Atualizar Turma</button>
+        <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded">Atualizar</button>
+        <a href="{{ route('turmas.index') }}" class="ml-2 text-blue-600 hover:underline">Cancelar</a>
     </form>
 </div>
 @endsection

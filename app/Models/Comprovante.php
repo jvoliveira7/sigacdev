@@ -10,29 +10,30 @@ class Comprovante extends Model
     use HasFactory;
 
     protected $fillable = [
+        'horas',
+        'atividade',
+        'categoria_id',
         'aluno_id',
-        'documento_id',
-        'data_emissao',
-        'arquivo' // Removi 'observacoes' pois pode ser redundante com o tipo de documento
+        'user_id'
     ];
 
-    protected $casts = [
-        'data_emissao' => 'date' // Garante que a data seja tratada como Carbon
-    ];
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
 
     public function aluno()
     {
-        return $this->belongsTo(Aluno::class)->select(['id', 'nome', 'cpf']);
+        return $this->belongsTo(Aluno::class);
     }
 
-    public function documento()
+    public function user()
     {
-        return $this->belongsTo(Documento::class)->select(['id', 'nome']);
+        return $this->belongsTo(User::class);
     }
 
-    // Método de acesso para URL do arquivo
-    public function getArquivoUrlAttribute()
+    public function declaracoes()
     {
-        return $this->arquivo ? asset('storage/' . $this->arquivo) : null;
+        return $this->hasMany(Declaracao::class);
     }
 }

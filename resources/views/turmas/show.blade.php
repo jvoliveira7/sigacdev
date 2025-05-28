@@ -1,27 +1,20 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Detalhes da Turma: {{ $turma->nome }}</h1>
+<div class="max-w-xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Detalhes da Turma</h1>
 
-    <p><strong>Curso:</strong> {{ $turma->curso->nome ?? 'Sem curso' }}</p>
-    <p><strong>Código:</strong> {{ $turma->codigo }}</p>
-    <p><strong>Data Início:</strong> {{ $turma->data_inicio->format('d/m/Y') }}</p>
-    <p><strong>Data Fim:</strong> {{ $turma->data_fim->format('d/m/Y') }}</p>
-    <p><strong>Horário:</strong> {{ $turma->horario }}</p>
-    <p><strong>Sala:</strong> {{ $turma->sala }}</p>
-    <p><strong>Professor:</strong> {{ $turma->professor->nome ?? 'Sem professor' }}</p>
+    <div class="mb-4">
+        <strong>ID:</strong> {{ $turma->id }}
+    </div>
+    <div class="mb-4">
+        <strong>Ano:</strong> {{ $turma->ano }}
+    </div>
+    <div class="mb-4">
+        <strong>Curso:</strong> {{ $turma->curso->nome ?? '—' }}
+    </div>
 
-    <h2>Alunos Matriculados</h2>
-    <ul>
-        @foreach($turma->alunos as $aluno)
-            <li>{{ $aluno->nome }}</li>
-        @endforeach
-    </ul>
-
-    <a href="{{ route('turmas.edit', $turma->id) }}">Editar Turma</a>
-    <form action="{{ route('turmas.destroy', $turma->id) }}" method="POST" style="display:inline;">
-        @csrf
-        @method('DELETE')
-        <button type="submit">Excluir Turma</button>
-    </form>
+    <a href="{{ route('turmas.edit', $turma) }}" class="text-yellow-600 hover:underline">Editar</a>
+    <a href="{{ route('turmas.index') }}" class="ml-4 text-blue-600 hover:underline">Voltar</a>
+</div>
 @endsection

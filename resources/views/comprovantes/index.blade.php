@@ -2,32 +2,34 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Lista de Comprovantes</h1>
+    <h1>Comprovantes</h1>
+    <a href="{{ route('comprovantes.create') }}" class="btn btn-primary mb-3">Novo Comprovante</a>
 
-    <a href="{{ route('alunos.index') }}" class="btn btn-secondary mb-3">Voltar aos Alunos</a>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Descrição</th>
                 <th>Aluno</th>
-                <th>Tipo</th>
-                <th>Data</th>
+                <th>Arquivo</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
             @foreach($comprovantes as $comprovante)
                 <tr>
-                    <td>{{ $comprovante->id }}</td>
-                    <td>{{ $comprovante->aluno->nome }}</td>
-                    <td>{{ $comprovante->tipo }}</td>
-                    <td>{{ $comprovante->created_at->format('d/m/Y') }}</td>
+                    <td>{{ $comprovante->descricao }}</td>
+                    <td>{{ $comprovante->aluno->nome ?? 'N/A' }}</td>
+                    <td><a href="{{ asset('storage/' . $comprovante->arquivo) }}" target="_blank">Visualizar</a></td>
                     <td>
                         <a href="{{ route('comprovantes.show', $comprovante->id) }}" class="btn btn-sm btn-info">Ver</a>
-                        <a href="{{ route('comprovantes.edit', $comprovante->id) }}" class="btn btn-sm btn-primary">Editar</a>
-                        <form action="{{ route('comprovantes.destroy', $comprovante->id) }}" method="POST" style="display:inline-block;">
-                            @csrf @method('DELETE')
+                        <a href="{{ route('comprovantes.edit', $comprovante->id) }}" class="btn btn-sm btn-warning">Editar</a>
+                        <form action="{{ route('comprovantes.destroy', $comprovante->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')">Excluir</button>
                         </form>
                     </td>
@@ -35,5 +37,7 @@
             @endforeach
         </tbody>
     </table>
+
+    {{ $comprovantes->links() }}
 </div>
 @endsection

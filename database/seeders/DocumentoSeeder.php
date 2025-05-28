@@ -3,45 +3,21 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Documento;
 
 class DocumentoSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        // Dados fictícios para a tabela `documentos`
-        $documentos = [
-            [
-                'nome' => 'RG',
-                'descricao' => 'Documento de identidade',
-                'obrigatorio' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nome' => 'CPF',
-                'descricao' => 'Cadastro de Pessoa Física',
-                'obrigatorio' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nome' => 'Comprovante de Residência',
-                'descricao' => 'Comprovante recente de residência',
-                'obrigatorio' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'nome' => 'Certificado de Escolaridade',
-                'descricao' => 'Comprovante de escolaridade do aluno',
-                'obrigatorio' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ];
-
-        // Inserir os dados na tabela `documentos`
-        DB::table('documentos')->insert($documentos);
+        Documento::create([
+            'url' => 'http://exemplo.com/doc.pdf',
+            'descricao' => 'Certificado de Curso',
+            'horas_in' => 10,
+            'status' => 'pendente',
+            'comentario' => 'Aguardando validação',
+            'horas_out' => 0,
+            'categoria_id' => 1,
+            'user_id' => 1
+        ]);
     }
 }

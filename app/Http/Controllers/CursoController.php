@@ -3,79 +3,77 @@
 namespace App\Http\Controllers;
 
 use App\Models\Curso;
-use App\Models\Categoria;
 use App\Models\Nivel;
+use App\Models\Eixo;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CursoController extends Controller
 {
-    // Exibe a lista de cursos
     public function index()
     {
-        $cursos = Curso::with(['categoria', 'nivel'])->paginate(10);
+        $cursos = Curso::with(['nivel', 'eixo'])->paginate(10);
         return view('cursos.index', compact('cursos'));
     }
 
-    // Exibe o formulário de criação de curso
     public function create()
     {
-        $categorias = Categoria::all();
         $niveis = Nivel::all();
-        return view('cursos.create', compact('categorias', 'niveis'));
+        $eixos = Eixo::all();
+        return view('cursos.create', compact('niveis', 'eixos'));
     }
 
-    public function show(Curso $curso)
-{
-    return view('cursos.show', compact('curso'));
-}
-
-
-    // Armazena um novo curso
     public function store(Request $request)
     {
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
-            'descricao' => 'required|string',
-            'categoria_id' => 'required|exists:categorias,id',
+            'sigla' => 'required|string|max:10|unique:cursos,sigla',
+            'total_horas' => 'required|integer|min:0',
             'nivel_id' => 'required|exists:niveis,id',
+            'eixo_id' => 'required|exists:eixos,id',
         ]);
 
         Curso::create($validated);
 
-        return redirect()->route('cursos.index')
-            ->with('success', 'Curso cadastrado com sucesso!');
+        return redirect()->route('cursos.index')->with('success', 'Curso criado com sucesso!');
     }
 
-    // Exibe o formulário de edição de curso
+    public function show(Curso $curso)
+    {
+        $curso->load(['nivel', 'eixo', 'turmas', 'alunos', 'categorias']);
+        return view('cursos.show', compact('curso'));
+    }
+
     public function edit(Curso $curso)
     {
-        $categorias = Categoria::all();
         $niveis = Nivel::all();
-        return view('cursos.edit', compact('curso', 'categorias', 'niveis'));
+        $eixos = Eixo::all();
+        return view('cursos.edit', compact('curso', 'niveis', 'eixos'));
     }
 
-    // Atualiza um curso existente
     public function update(Request $request, Curso $curso)
     {
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
-            'descricao' => 'required|string',
-            'categoria_id' => 'required|exists:categorias,id',
+            'sigla' => [
+                'required',
+                'string',
+                'max:10',
+                Rule::unique('cursos')->ignore($curso->id),
+            ],
+            'total_horas' => 'required|integer|min:0',
             'nivel_id' => 'required|exists:niveis,id',
+            'eixo_id' => 'required|exists:eixos,id',
         ]);
 
         $curso->update($validated);
 
-        return redirect()->route('cursos.index')
-            ->with('success', 'Curso atualizado com sucesso!');
+        return redirect()->route('cursos.show', $curso->id)->with('success', 'Curso atualizado com sucesso!');
     }
 
-    // Remove um curso
     public function destroy(Curso $curso)
     {
         $curso->delete();
-
-        return redirect()->route('cursos.index')
-            ->with('success', 'Curso excluído com sucesso!');
+        return redirect()->route('cursos.index')->with('success', 'Curso removido com sucesso!');
     }
 }

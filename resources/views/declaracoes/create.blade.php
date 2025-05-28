@@ -2,32 +2,28 @@
 
 @section('content')
 <div class="container">
-    <h1>Emitir Declaração</h1>
+    <h1>Nova Declaração</h1>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach($errors->all() as $erro)
+                    <li>{{ $erro }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form action="{{ route('declaracoes.store') }}" method="POST">
         @csrf
 
         <div class="mb-3">
-            <label for="aluno_id" class="form-label">Aluno</label>
-            <select name="aluno_id" class="form-select" required>
-                <option value="">Selecione um aluno</option>
-                @foreach($alunos as $aluno)
-                    <option value="{{ $aluno->id }}">{{ $aluno->nome }}</option>
-                @endforeach
-            </select>
+            <label for="descricao" class="form-label">Descrição</label>
+            <textarea name="descricao" id="descricao" class="form-control">{{ old('descricao') }}</textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="tipo" class="form-label">Tipo de Declaração</label>
-            <input type="text" name="tipo" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="conteudo" class="form-label">Conteúdo</label>
-            <textarea name="conteudo" class="form-control" rows="5" required></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-success">Emitir</button>
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <a href="{{ route('declaracoes.index') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 @endsection

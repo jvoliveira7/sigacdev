@@ -1,54 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Turmas</h1>
-        <a href="{{ route('turmas.create') }}" class="btn btn-success">Criar Nova Turma</a>
-    </div>
+<div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Lista de Turmas</h1>
 
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+    <div class="bg-green-100 text-green-800 p-4 rounded mb-4">
+        {{ session('success') }}
+    </div>
+@endif
 
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nome</th>
-                    <th>Curso</th>
-                    <th>Data Início</th>
-                    <th>Data Fim</th>
-                    <th class="text-center">Ações</th>
+    <a href="{{ route('turmas.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">Nova Turma</a>
+
+    @if($turmas->count())
+        <table class="w-full table-auto border-collapse">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border px-4 py-2 text-left">ID</th>
+                    <th class="border px-4 py-2 text-left">Ano</th>
+                    <th class="border px-4 py-2 text-left">Curso</th>
+                    <th class="border px-4 py-2 text-left">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($turmas as $turma)
                     <tr>
-                        <td>{{ $turma->nome }}</td>
-                        <td>{{ $turma->curso->nome ?? 'Sem curso' }}</td>
-                        <td>{{ optional($turma->data_inicio)->format('d/m/Y') }}</td>
-                        <td>{{ optional($turma->data_fim)->format('d/m/Y') }}</td>
-                        <td class="text-center">
-                            <a href="{{ route('turmas.show', $turma->id) }}" class="btn btn-sm btn-info">Ver</a>
-                            <a href="{{ route('turmas.edit', $turma->id) }}" class="btn btn-sm btn-warning">Editar</a>
-                            <form action="{{ route('turmas.destroy', $turma->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Tem certeza que deseja excluir esta turma?');">
+                        <td class="border px-4 py-2">{{ $turma->id }}</td>
+                        <td class="border px-4 py-2">{{ $turma->ano }}</td>
+                        <td class="border px-4 py-2">{{ $turma->curso->nome ?? '—' }}</td>
+                        <td class="border px-4 py-2">
+                            <a href="{{ route('turmas.show', $turma) }}" class="text-blue-600 hover:underline">Ver</a>
+                            <a href="{{ route('turmas.edit', $turma) }}" class="text-yellow-600 hover:underline ml-2">Editar</a>
+                            <form action="{{ route('turmas.destroy', $turma) }}" method="POST" class="inline ml-2" onsubmit="return confirm('Tem certeza que deseja excluir?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                <button type="submit" class="text-red-600 hover:underline">Excluir</button>
                             </form>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-    </div>
 
-    {{-- Paginação, se estiver usando paginate() no controller --}}
-    <div class="mt-4">
-        {{ $turmas->links() }}
-    </div>
+        <div class="mt-4">
+            {{ $turmas->links() }}
+        </div>
+    @else
+        <p>Nenhuma turma cadastrada.</p>
+    @endif
 </div>
 @endsection

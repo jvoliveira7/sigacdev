@@ -2,30 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\Categoria;
 use Illuminate\Database\Seeder;
+use App\Models\Categoria;
 
 class CategoriaSeeder extends Seeder
 {
     public function run()
     {
-        $categorias = [
-            'Tecnologia',
-            'Negócios',
-            'Saúde',
-            'Educação',
-            'Artes'
-        ];
-
-        $now = now(); // Captura o timestamp atual
-
-        foreach ($categorias as $categoria) {
-            Categoria::create([
-                'nome' => $categoria,
-                'descricao' => "Cursos de $categoria",
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
-        }
+        Categoria::create([
+            
+            'nome' => 'Atividades Complementares',
+            'maximo_horas' => 200,
+            'curso_id' => 1
+            
+        ]);
     }
 }

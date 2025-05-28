@@ -9,9 +9,11 @@ class Nivel extends Model
 {
     use HasFactory;
 
-       protected $table = 'niveis';
-
-    protected $fillable = ['nome', 'descricao'];
+       protected $table = 'niveis';  // Define o nome correto da tabela
+       
+    protected $fillable = [
+        'nome'
+    ];
 
     public function cursos()
     {

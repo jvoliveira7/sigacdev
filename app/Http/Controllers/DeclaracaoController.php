@@ -12,14 +12,14 @@ use Carbon\Carbon;
 
 class DeclaracaoController extends Controller
 {
-    // Exibe a lista de declarações
+    // Lista declarações com eager loading correto
     public function index()
     {
-        $declaracoes = Declaracao::with(['aluno', 'turma.curso'])->paginate(10);
+        $declaracoes = Declaracao::with(['aluno.turma.curso'])->paginate(10);
         return view('declaracoes.index', compact('declaracoes'));
     }
 
-    // Exibe o formulário para criar uma nova declaração
+    // Form para nova declaração
     public function create()
     {
         $alunos = Aluno::all(['id', 'nome']);
@@ -27,66 +27,99 @@ class DeclaracaoController extends Controller
         return view('declaracoes.create', compact('alunos', 'turmas'));
     }
 
-    // Armazena a nova declaração
+    // Salvar nova declaração
     public function store(Request $request)
     {
         $validated = $request->validate([
             'aluno_id' => 'required|exists:alunos,id',
-            'turma_id' => 'required|exists:turmas,id',
+            'turma_id' => [
+                'required',
+                'exists:turmas,id',
+                function ($attribute, $value, $fail) use ($request) {
+                    $aluno = Aluno::find($request->aluno_id);
+                    if ($aluno && !$aluno->turma || $aluno->turma->id != $value) {
+                        $fail('O aluno não está matriculado nesta turma.');
+                    }
+                }
+            ],
             'tipo' => 'required|string|max:100',
         ]);
 
         $aluno = Aluno::findOrFail($validated['aluno_id']);
         $turma = Turma::with('curso')->findOrFail($validated['turma_id']);
 
-        // Gera o conteúdo da declaração
         $conteudo = "Declaro para os devidos fins que o(a) aluno(a) {$aluno->nome} está regularmente matriculado(a) na turma de {$turma->curso->nome}.";
 
-        // Define o nome do arquivo para salvar
         $fileName = 'declaracao_' . Str::slug($aluno->nome) . '_' . time() . '.txt';
 
-        // Salva o conteúdo da declaração no disco
         Storage::disk('public')->put("declaracoes/{$fileName}", $conteudo);
 
-        // Cria a declaração no banco com o caminho do arquivo
         Declaracao::create([
             'aluno_id' => $aluno->id,
-            'turma_id' => $turma->id,
-            'data_emissao' => Carbon::now()->format('Y-m-d'),
-            'arquivo' => "declaracoes/{$fileName}", // Caminho do arquivo gerado
+            'data' => Carbon::now()->format('Y-m-d'),
+            'arquivo' => "declaracoes/{$fileName}",
+            'tipo' => $validated['tipo'], // adicionei o campo tipo, pois você usa na validação
         ]);
 
-        return redirect()->route('declaracoes.index')
-            ->with('success', 'Declaração emitida com sucesso!');
+        return redirect()->route('declaracoes.index')->with('success', 'Declaração emitida com sucesso!');
     }
 
-    // Exibe os detalhes de uma declaração
-    public function show(Declaracao $declaracao)
+    // Mostrar declaração
+    public function show($id)
     {
+        $declaracao = Declaracao::with(['aluno.turma.curso'])->findOrFail($id);
         return view('declaracoes.show', compact('declaracao'));
     }
 
-    // Faz o download da declaração como um arquivo .txt
-    public function download(Declaracao $declaracao)
+    // Editar declaração
+    public function edit($id)
     {
-        $filePath = storage_path('app/public/' . $declaracao->arquivo);
-        $fileName = 'declaracao_' . $declaracao->id . '.txt';
-
-        return response()->download($filePath, $fileName, [
-            'Content-Type' => 'text/plain',
-        ]);
+        $declaracao = Declaracao::findOrFail($id);
+        $alunos = Aluno::all();
+        return view('declaracoes.edit', compact('declaracao', 'alunos'));
     }
 
-    // Exclui uma declaração
-    public function destroy(Declaracao $declaracao)
+    // Atualizar declaração
+    public function update(Request $request, $id)
     {
-        // Remove o arquivo associado à declaração
-        Storage::disk('public')->delete($declaracao->arquivo);
+        $declaracao = Declaracao::findOrFail($id);
 
-        // Deleta o registro da declaração no banco de dados
+        $request->validate([
+            'aluno_id' => 'required|exists:alunos,id',
+            'tipo' => 'required|string|max:255',
+        ]);
+
+        $declaracao->aluno_id = $request->aluno_id;
+        $declaracao->tipo = $request->tipo;
+
+        $declaracao->save();
+
+        return redirect()->route('declaracoes.index')->with('success', 'Declaração atualizada com sucesso.');
+    }
+
+    // Excluir declaração
+    public function destroy($id)
+    {
+        $declaracao = Declaracao::findOrFail($id);
+
+        if ($declaracao->arquivo) {
+            Storage::disk('public')->delete($declaracao->arquivo);
+        }
+
         $declaracao->delete();
 
-        return redirect()->route('declaracoes.index')
-            ->with('success', 'Declaração removida com sucesso!');
+        return redirect()->route('declaracoes.index')->with('success', 'Declaração excluída com sucesso!');
+    }
+
+    // Download do arquivo da declaração
+    public function download($id)
+    {
+        $declaracao = Declaracao::findOrFail($id);
+
+        if (!$declaracao->arquivo || !Storage::disk('public')->exists($declaracao->arquivo)) {
+            return redirect()->route('declaracoes.index')->with('error', 'Arquivo não encontrado.');
+        }
+
+        return Storage::disk('public')->download($declaracao->arquivo);
     }
 }

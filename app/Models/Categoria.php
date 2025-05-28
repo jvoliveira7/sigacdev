@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Categoria extends Model
 {
@@ -12,32 +11,22 @@ class Categoria extends Model
 
     protected $fillable = [
         'nome',
-        'descricao'
+        'maximo_horas',
+        'curso_id'
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime:d/m/Y H:i',
-        'updated_at' => 'datetime:d/m/Y H:i'
-    ];
-
-    public function cursos(): HasMany
+    public function curso()
     {
-        return $this->hasMany(Curso::class);
+        return $this->belongsTo(Curso::class);
     }
 
-    /**
-     * Escopo para filtrar categorias ativas (com cursos)
-     */
-    public function scopeComCursos($query)
+    public function comprovantes()
     {
-        return $query->whereHas('cursos');
+        return $this->hasMany(Comprovante::class);
     }
 
-    /**
-     * Acessor para nome formatado
-     */
-    public function getNomeFormatadoAttribute(): string
+    public function documentos()
     {
-        return ucwords(strtolower($this->nome));
+        return $this->hasMany(Documento::class);
     }
 }

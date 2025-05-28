@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Nivel;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class NivelController extends Controller
 {
     public function index()
     {
-        $niveis = Nivel::paginate(10);
+        $niveis = Nivel::with('cursos')->paginate(10);
         return view('niveis.index', compact('niveis'));
     }
 
@@ -22,18 +21,17 @@ class NivelController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nome' => 'required|string|max:50|unique:niveis',
-            'descricao' => 'nullable|string|max:255'
+            'nome' => 'required|string|max:100|unique:niveis,nome',
         ]);
 
         Nivel::create($validated);
 
-        return redirect()->route('niveis.index')
-            ->with('success', 'Nível cadastrado com sucesso!');
+        return redirect()->route('niveis.index')->with('success', 'Nível criado com sucesso!');
     }
 
     public function show(Nivel $nivel)
     {
+        $nivel->load('cursos');
         return view('niveis.show', compact('nivel'));
     }
 
@@ -45,25 +43,17 @@ class NivelController extends Controller
     public function update(Request $request, Nivel $nivel)
     {
         $validated = $request->validate([
-            'nome' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('niveis')->ignore($nivel->id)
-            ],
-            'descricao' => 'nullable|string|max:255'
+            'nome' => 'required|string|max:100|unique:niveis,nome,' . $nivel->id,
         ]);
 
         $nivel->update($validated);
 
-        return redirect()->route('niveis.show', $nivel->id)
-            ->with('success', 'Nível atualizado com sucesso!');
+        return redirect()->route('niveis.show', $nivel->id)->with('success', 'Nível atualizado com sucesso!');
     }
 
     public function destroy(Nivel $nivel)
     {
         $nivel->delete();
-        return redirect()->route('niveis.index')
-            ->with('success', 'Nível removido com sucesso!');
+        return redirect()->route('niveis.index')->with('success', 'Nível removido com sucesso!');
     }
 }

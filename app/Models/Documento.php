@@ -9,10 +9,24 @@ class Documento extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nome', 'descricao', 'obrigatorio'];
+    protected $fillable = [
+        'url',
+        'descricao',
+        'horas_in',
+        'status',
+        'comentario',
+        'horas_out',
+        'categoria_id',
+        'user_id'
+    ];
 
-    public function comprovantes()
+    public function categoria()
     {
-        return $this->hasMany(Comprovante::class);
+        return $this->belongsTo(Categoria::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

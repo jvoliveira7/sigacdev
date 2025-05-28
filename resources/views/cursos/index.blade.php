@@ -2,17 +2,17 @@
 
 @section('content')
 <div class="container">
-    <h1>Lista de Cursos</h1>
+    <h1>Cursos</h1>
+    <a href="{{ route('cursos.create') }}" class="btn btn-primary mb-3">Novo Curso</a>
 
-    <a href="{{ route('cursos.create') }}" class="btn btn-primary mb-3">Cadastrar Novo Curso</a>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
-    <table class="table table-striped">
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Nome</th>
-                <th>Sigla</th>
-                <th>Carga Horária</th>
-                <th>Valor</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -20,16 +20,13 @@
             @foreach($cursos as $curso)
                 <tr>
                     <td>{{ $curso->nome }}</td>
-                    <td>{{ $curso->sigla }}</td>
-                    <td>{{ $curso->carga_horaria }} horas</td>
-                    <td>R$ {{ number_format($curso->valor, 2, ',', '.') }}</td>
                     <td>
-                        <a href="{{ route('cursos.show', $curso->id) }}" class="btn btn-info btn-sm">Ver</a>
-                        <a href="{{ route('cursos.edit', $curso->id) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <form action="{{ route('cursos.destroy', $curso->id) }}" method="POST" style="display:inline-block">
+                        <a href="{{ route('cursos.show', $curso->id) }}" class="btn btn-sm btn-info">Ver</a>
+                        <a href="{{ route('cursos.edit', $curso->id) }}" class="btn btn-sm btn-warning">Editar</a>
+                        <form action="{{ route('cursos.destroy', $curso->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este curso?')">Excluir</button>
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')">Excluir</button>
                         </form>
                     </td>
                 </tr>

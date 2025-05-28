@@ -14,22 +14,31 @@ class Aluno extends Model
         'nome',
         'email',
         'cpf',
-        'telefone'
+        'telefone',
+        'senha',
+        'user_id',
+        'curso_id',
+        'turma_id'
     ];
 
     protected $casts = [
-        'cpf' => 'string' // Para garantir que o CPF mantenha zeros à esquerda
+        'cpf' => 'string'
     ];
 
-    public function turmas()
+    public function user()
     {
-        return $this->belongsToMany(Turma::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class);
     }
 
     public function turma()
-{
-    return $this->belongsTo(Turma::class);
-}
+    {
+        return $this->belongsTo(Turma::class);
+    }
 
     public function comprovantes()
     {

@@ -3,70 +3,48 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Sistema Acadêmico')</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Bootstrap 5 CSS (via CDN) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome (ícones) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Estilos adicionais -->
-    @yield('styles')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">Sistema</a>
+<body class="font-sans antialiased bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+                <!-- Left: Menu Links -->
+                <div class="flex space-x-6">
+                    <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-gray-900 hover:underline">Dashboard</a>
+                    <a href="{{ route('alunos.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Alunos</a>
+                    <a href="{{ route('cursos.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Cursos</a>
+                    <a href="{{ route('categorias.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Categorias</a>
+                    <a href="{{ route('comprovantes.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Comprovantes</a>
+                    <a href="{{ route('documentos.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Documentos</a>
+                    <a href="{{ route('declaracoes.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Declarações</a>
+                    <a href="{{ route('eixos.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Eixos</a>
+                    <a href="{{ route('niveis.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Níveis</a>
+                    <a href="{{ route('turmas.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Turmas</a>
+                    <a href="{{ route('users.index') }}" class="text-sm font-semibold text-gray-900 hover:underline">Usuários</a>
+                </div>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                <!-- Right: Auth Info -->
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">{{ Auth::user()->name }}</span>
 
-            <div class="collapse navbar-collapse" id="navbarContent">
-                @auth
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('alunos.index') }}">Alunos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('cursos.index') }}">Cursos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('turmas.index') }}">Turmas</a></li>
-                    <!-- Adicione outras seções conforme necessário -->
-                </ul>
-                @endauth
-
-                <ul class="navbar-nav ms-auto">
-                    @auth
-                        <li class="nav-item">
-                            <span class="nav-link">Olá, {{ Auth::user()->name }}</span>
-                        </li>
-                        <li class="nav-item">
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button class="nav-link btn btn-link" type="submit">Sair</button>
-                            </form>
-                        </li>
-                    @else
-                        <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Entrar</a></li>
-                    @endauth
-                </ul>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="text-sm text-red-500 hover:underline">
+                            Sair
+                        </button>
+                    </form>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <main class="container mb-5">
-        @yield('content')
-    </main>
-
-    <footer class="bg-light text-center py-3 mt-auto">
-        <div class="container">
-            <span class="text-muted">© {{ date('Y') }} - Sistema Acadêmico</span>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Scripts adicionais -->
-    @yield('scripts')
+        <!-- Page Content -->
+        <main class="py-6 px-4">
+            @yield('content')
+        </main>
+    </div>
 </body>
 </html>

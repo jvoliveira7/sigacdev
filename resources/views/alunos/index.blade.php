@@ -1,96 +1,52 @@
-{{-- resources/views/alunos/index.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Lista de Alunos')
-
 @section('content')
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h2>Alunos Cadastrados</h2>
-        </div>
-        <div class="col-md-6 text-end">
-            <a href="{{ route('alunos.create') }}" class="btn btn-success">
-                <i class="fas fa-plus"></i> Novo Aluno
-            </a>
-        </div>
-    </div>
+<div class="p-6">
+    <h1 class="text-2xl font-bold mb-4">Lista de Alunos</h1>
 
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+    @if (session('success'))
+        <div class="mb-4 p-3 bg-green-200 text-green-800 rounded">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>CPF</th>
-                            <th>E-mail</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($alunos as $aluno)
-                            <tr>
-                                <td>{{ $aluno->id }}</td>
-                                <td>{{ $aluno->nome }}</td>
-                                <td class="cpf">{{ $aluno->cpf }}</td>
-                                <td>{{ $aluno->email }}</td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('alunos.show', $aluno->id) }}" 
-                                           class="btn btn-info" title="Ver detalhes">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('alunos.edit', $aluno->id) }}" 
-                                           class="btn btn-warning" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('alunos.destroy', $aluno->id) }}" 
-                                              method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger" 
-                                                    title="Excluir" onclick="return confirm('Tem certeza que deseja excluir?')">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center">Nenhum aluno cadastrado</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            
-            @if($alunos->hasPages())
-                <div class="d-flex justify-content-center mt-4">
-                    {{ $alunos->links() }}
-                </div>
-            @endif
-        </div>
+    <table class="min-w-full border border-gray-300">
+        <thead>
+            <tr>
+                <th class="border p-2">Nome</th>
+                <th class="border p-2">Email</th>
+                <th class="border p-2">CPF</th>
+                <th class="border p-2">Telefone</th>
+                <th class="border p-2">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($alunos as $aluno)
+                <tr>
+                    <td class="border p-2">{{ $aluno->nome }}</td>
+                    <td class="border p-2">{{ $aluno->email }}</td>
+                    <td class="border p-2">{{ $aluno->cpf }}</td>
+                    <td class="border p-2">{{ $aluno->telefone }}</td>
+                    <td class="border p-2 space-x-2">
+                        <a href="{{ route('alunos.show', $aluno->id) }}" class="text-blue-600 hover:underline">Ver</a>
+                        <a href="{{ route('alunos.edit', $aluno->id) }}" class="text-yellow-600 hover:underline">Editar</a>
+                        <form action="{{ route('alunos.destroy', $aluno->id) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button onclick="return confirm('Confirmar exclusão?')" class="text-red-600 hover:underline">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="text-center p-4">Nenhum aluno encontrado.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        {{ $alunos->links() }}  <!-- Paginação -->
     </div>
 </div>
-@endsection
-
-@section('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-<script>
-$(document).ready(function(){
-    $('.cpf').text(function(i, text) {
-        return text.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    });
-});
-</script>
 @endsection

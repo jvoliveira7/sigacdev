@@ -2,23 +2,10 @@
 
 @section('content')
 <div class="container">
-    <h1>Detalhes da Declaração</h1>
+    <h1>Declaração #{{ $declaracao->id }}</h1>
 
-    <div class="mb-3">
-        <strong>Aluno:</strong> {{ $declaracao->aluno->nome }}
-    </div>
-
-    <div class="mb-3">
-        <strong>Tipo de Declaração:</strong> {{ $declaracao->tipo }}
-    </div>
-
-    <div class="mb-3">
-        <strong>Data de Emissão:</strong> {{ $declaracao->created_at->format('d/m/Y') }}
-    </div>
-
-    <div class="mb-3">
-        <a href="{{ route('declaracoes.download', $declaracao->id) }}" class="btn btn-info">Baixar Declaração</a>
-    </div>
+    <p><strong>Usuário:</strong> {{ $declaracao->user->name ?? 'N/A' }}</p>
+    <p><strong>Descrição:</strong> {{ $declaracao->descricao }}</p>
 
     <a href="{{ route('declaracoes.index') }}" class="btn btn-secondary">Voltar</a>
 </div>

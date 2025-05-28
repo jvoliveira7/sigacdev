@@ -3,83 +3,80 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comprovante;
+use App\Models\Categoria;
 use App\Models\Aluno;
-use App\Models\Documento;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ComprovanteController extends Controller
 {
-    // Lista todos os comprovantes
     public function index()
     {
-        $comprovantes = Comprovante::with(['aluno', 'documento'])->paginate(10);
+        $comprovantes = Comprovante::with(['categoria', 'aluno', 'user'])->paginate(10);
         return view('comprovantes.index', compact('comprovantes'));
     }
 
-    // Exibe o formulário de criação
     public function create()
     {
-        $alunos = Aluno::all(['id', 'nome']);
-        $documentos = Documento::all();
-        return view('comprovantes.create', compact('alunos', 'documentos'));
+        $categorias = Categoria::all();
+        $alunos = Aluno::all();
+        return view('comprovantes.create', compact('categorias', 'alunos'));
     }
 
-    // Armazena novo comprovante
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'horas' => 'required|numeric|min:0',
+            'atividade' => 'required|string|max:255',
+            'categoria_id' => 'required|exists:categorias,id',
             'aluno_id' => 'required|exists:alunos,id',
-            'documento_id' => 'required|exists:documentos,id',
-            'data_emissao' => 'required|date',
-            'arquivo' => 'required|string|max:255',
+            // user_id será do usuário logado
         ]);
+
+        $validated['user_id'] = auth()->id();
 
         Comprovante::create($validated);
 
-        return redirect()->route('comprovantes.index')
-            ->with('success', 'Comprovante cadastrado com sucesso!');
+        return redirect()->route('comprovantes.index')->with('success', 'Comprovante criado com sucesso!');
     }
 
-    // Exibe o formulário de edição
+    public function show(Comprovante $comprovante)
+    {
+        $comprovante->load(['categoria', 'aluno', 'user', 'declaracoes']);
+        return view('comprovantes.show', compact('comprovante'));
+    }
+
     public function edit(Comprovante $comprovante)
     {
-        $alunos = Aluno::all(['id', 'nome']);
-        $documentos = Documento::all();
-        return view('comprovantes.edit', compact('comprovante', 'alunos', 'documentos'));
+        $categorias = Categoria::all();
+        $alunos = Aluno::all();
+        return view('comprovantes.edit', compact('comprovante', 'categorias', 'alunos'));
     }
 
-    // Atualiza um comprovante existente
     public function update(Request $request, Comprovante $comprovante)
     {
         $validated = $request->validate([
+            'horas' => 'required|numeric|min:0',
+            'atividade' => 'required|string|max:255',
+            'categoria_id' => 'required|exists:categorias,id',
             'aluno_id' => 'required|exists:alunos,id',
-            'documento_id' => 'required|exists:documentos,id',
-            'data_emissao' => 'required|date',
-            'arquivo' => 'required|string|max:255',
         ]);
 
         $comprovante->update($validated);
 
-        return redirect()->route('comprovantes.index')
-            ->with('success', 'Comprovante atualizado com sucesso!');
+        return redirect()->route('comprovantes.show', $comprovante->id)->with('success', 'Comprovante atualizado com sucesso!');
     }
 
-    // Remove um comprovante
     public function destroy(Comprovante $comprovante)
     {
         $comprovante->delete();
-
-        return redirect()->route('comprovantes.index')
-            ->with('success', 'Comprovante excluído com sucesso!');
+        return redirect()->route('comprovantes.index')->with('success', 'Comprovante removido com sucesso!');
     }
 
-    // Exibe os detalhes de um comprovante específico
-    public function show($id)
+    // Método adicional para mostrar documento relacionado (se necessário)
+    public function showDocument(Comprovante $comprovante)
     {
-        // Encontrar o comprovante com o id fornecido, incluindo as relações
-        $comprovante = Comprovante::with(['aluno', 'documento'])->findOrFail($id);
-
-        // Retornar a view de detalhes do comprovante
-        return view('comprovantes.show', compact('comprovante'));
+        // Exemplo de retorno para o documento, adapte conforme sua lógica
+        return view('comprovantes.documento', compact('comprovante'));
     }
 }

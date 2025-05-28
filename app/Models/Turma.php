@@ -11,12 +11,7 @@ class Turma extends Model
 
     protected $fillable = [
         'curso_id',
-        'codigo',
-        'data_inicio',
-        'data_fim',
-        'horario',
-        'vagas',
-        'local'
+        'ano'
     ];
 
     public function curso()
@@ -26,7 +21,12 @@ class Turma extends Model
 
     public function alunos()
     {
-        return $this->belongsToMany(Aluno::class);
+        return $this->hasMany(Aluno::class); // Turma_id direto no aluno
+    }
+
+    public function alunosPivot()
+    {
+        return $this->belongsToMany(Aluno::class, 'aluno_turma');
     }
 
     public function declaracoes()

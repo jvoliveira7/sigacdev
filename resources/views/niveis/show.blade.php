@@ -1,22 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1 class="mb-4">Detalhes do Nível: <span class="badge bg-primary">{{ $nivel->nome }}</span></h1>
+<div class="p-6 max-w-lg mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Detalhes do Nível</h1>
 
-    <div class="mb-3">
-        <strong>Descrição:</strong> <p>{{ $nivel->descricao ?? 'Nenhuma descrição fornecida.' }}</p>
+    <div class="mb-4">
+        <strong>Nome:</strong> {{ $nivel->nome }}
     </div>
 
-    <div class="d-flex justify-content-between">
-        <a href="{{ route('niveis.index') }}" class="btn btn-secondary">Voltar</a>
-        <a href="{{ route('niveis.edit', $nivel->id) }}" class="btn btn-warning">Editar</a>
-
-        <form action="{{ route('niveis.destroy', $nivel->id) }}" method="POST" style="display:inline-block">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este nível?')">Excluir</button>
-        </form>
-    </div>
+    <a href="{{ route('niveis.edit', $nivel->id) }}" class="text-yellow-600 hover:underline">Editar</a>
+    <a href="{{ route('niveis.index') }}" class="ml-4 text-blue-600 hover:underline">Voltar</a>
 </div>
 @endsection

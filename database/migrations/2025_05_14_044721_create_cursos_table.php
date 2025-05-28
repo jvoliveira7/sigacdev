@@ -10,12 +10,11 @@ return new class extends Migration
     {
         Schema::create('cursos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('categoria_id')->constrained();
-            $table->foreignId('nivel_id')->constrained();
-            $table->string('nome', 100);
-            $table->text('descricao')->nullable();
-            $table->integer('carga_horaria');
-            $table->decimal('valor', 10, 2);
+            $table->string('nome', 255);
+            $table->string('sigla', 10)->unique();
+            $table->integer('total_horas')->unsigned();
+            $table->foreignId('nivel_id')->constrained('niveis')->onDelete('cascade');
+            $table->foreignId('eixo_id')->constrained('eixos')->onDelete('cascade');
             $table->timestamps();
         });
     }

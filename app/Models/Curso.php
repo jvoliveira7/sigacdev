@@ -10,26 +10,35 @@ class Curso extends Model
     use HasFactory;
 
     protected $fillable = [
-        'categoria_id',
-        'nivel_id',
         'nome',
-        'descricao',
-        'carga_horaria',
-        'valor'
+        'sigla',
+        'total_horas',
+        'nivel_id',
+        'eixo_id',
     ];
-
-    public function categoria()
-    {
-        return $this->belongsTo(Categoria::class);
-    }
 
     public function nivel()
     {
         return $this->belongsTo(Nivel::class);
     }
 
+    public function eixo()
+    {
+        return $this->belongsTo(Eixo::class);
+    }
+
     public function turmas()
     {
         return $this->hasMany(Turma::class);
+    }
+
+    public function alunos()
+    {
+        return $this->hasMany(Aluno::class);
+    }
+
+    public function categorias()
+    {
+        return $this->hasMany(Categoria::class);
     }
 }

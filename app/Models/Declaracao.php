@@ -10,12 +10,16 @@ class Declaracao extends Model
     use HasFactory;
 
     protected $table = 'declaracoes';
-    
+
     protected $fillable = [
+        'hash',
+        'data',
         'aluno_id',
-        'turma_id',
-        'data_emissao',
-        'arquivo'
+        'comprovante_id'
+    ];
+
+    protected $casts = [
+        'data' => 'datetime'
     ];
 
     public function aluno()
@@ -23,8 +27,14 @@ class Declaracao extends Model
         return $this->belongsTo(Aluno::class);
     }
 
-    public function turma()
+    public function comprovante()
     {
-        return $this->belongsTo(Turma::class);
+        return $this->belongsTo(Comprovante::class);
+    }
+
+    // Acessor para a turma através do aluno
+    public function getTurmaAttribute()
+    {
+        return $this->aluno->turma;
     }
 }

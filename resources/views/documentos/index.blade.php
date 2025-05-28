@@ -1,37 +1,46 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Documentos</h1>
+<div class="p-6 max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Lista de Documentos</h1>
 
-    <a href="{{ route('documentos.create') }}" class="btn btn-success mb-3">Novo Documento</a>
+    @if (session('success'))
+        <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Obrigatório</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($documentos as $documento)
-                <tr>
-                    <td>{{ $documento->id }}</td>
-                    <td>{{ $documento->nome }}</td>
-                    <td>{{ $documento->obrigatorio ? 'Sim' : 'Não' }}</td>
-                    <td>
-                        <a href="{{ route('documentos.show', $documento->id) }}" class="btn btn-sm btn-info">Ver</a>
-                        <a href="{{ route('documentos.edit', $documento->id) }}" class="btn btn-sm btn-primary">Editar</a>
-                        <form action="{{ route('documentos.destroy', $documento->id) }}" method="POST" style="display:inline-block;">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-sm btn-danger" onclick="return confirm('Confirmar exclusão?')">Excluir</button>
-                        </form>
-                    </td>
+    @if ($documentos->count())
+        <table class="w-full table-auto border-collapse">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border p-2">Descrição</th>
+                    <th class="border p-2">Categoria</th>
+                    <th class="border p-2">Usuário</th>
+                    <th class="border p-2">Horas</th>
+                    <th class="border p-2">Ações</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach ($documentos as $documento)
+                    <tr>
+                        <td class="border p-2">{{ $documento->descricao }}</td>
+                        <td class="border p-2">{{ $documento->categoria->nome ?? '—' }}</td>
+                        <td class="border p-2">{{ $documento->user->name ?? '—' }}</td>
+                        <td class="border p-2">{{ $documento->horas_in }}h</td>
+                        <td class="border p-2">
+                            <a href="{{ route('documentos.show', $documento->id) }}" class="text-blue-600 hover:underline">Ver</a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+            {{ $documentos->links() }}
+        </div>
+    @else
+        <p>Nenhum documento encontrado.</p>
+    @endif
 </div>
 @endsection
